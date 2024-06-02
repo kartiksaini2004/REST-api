@@ -28,16 +28,43 @@ fetchPosts.addEventListener("click", async () => {
           .then((users) => {
             const user = users[0];
             console.log(user);
-            username.innerText = "Username: "+user.username;
-            email.innerText = "Email: "+ user.email;
+            username.innerText = "Username: " + user.username;
+            email.innerText = "Email: " + user.email;
           });
-        title.innerText = "Title: "+post.title;
+        title.innerText = "Title: " + post.title;
         postContent.innerText = post.body;
         comments.innerText = "Comments";
 
-        comments.addEventListener("click",()=>{
+        comments.addEventListener("click", async () => {
+          const commentDialog = document.querySelector("#content-popup");
+          commentDialog.classList.remove("hidden");
+          const commentBox = document.querySelector(".comments-container");
+          await fetch(
+            `https://jsonplaceholder.typicode.com/comments?postId=${post.id}`
+          )
+            .then((response) => response.json())
+            .then((commentData) => {
+              commentBox.innerHTML = "";
+              commentData.forEach((newComment) => {
+                const comment = document.createElement("div");
+                comment.classList.add("comment");
+                const emailId = document.createElement("h3");
+                const commentContent = document.createElement("p");
+                emailId.innerText = newComment.email;
+                commentContent.innerText = newComment.body;
+                comment.appendChild(emailId);
+                comment.appendChild(commentContent);
+                commentBox.appendChild(comment);
+              });
+            });
+        });
 
-        })
+        document.querySelector(".close-btn").addEventListener("click", () => {
+          const commentDialog = document.querySelector("#content-popup");
+          const commentBox = document.querySelector(".comments-container");
+          commentBox.innerHTML="";
+          commentDialog.classList.add("hidden");
+        });
 
         postDiv.appendChild(username);
         postDiv.appendChild(email);
